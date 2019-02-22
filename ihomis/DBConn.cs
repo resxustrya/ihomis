@@ -8,21 +8,24 @@ using System.Windows.Forms;
 using System.Net;
 using System.IO;
 using System.Data;
+using System.Configuration;
+
 namespace ihomis
 {
     public class DBConn
     {
         private MySqlConnection conn;
-        private String server = "192.168.100.17";
-        private String database="hospital_dbo";
-        private String username = "doh7payroll";
-        private String password = "doh7payroll";
         private String connstring;
 
         public DBConn()
         {
-            connstring = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "UID=" + username + ";" + "PASSWORD=" + password + ";";
+            connstring = "SERVER=" + getConfigValue("ip") + ";PORT=" + getConfigValue("port") + ";DATABASE=" + getConfigValue("dbname")  +";"  + "UID=" + getConfigValue("username") + ";" + "PASSWORD=" + getConfigValue("password") + ";";
             conn = new MySqlConnection(connstring);
+        }
+
+        public String getConfigValue(String key)
+        {
+            return ConfigurationManager.AppSettings[key];
         }
         public void connect()
         {
@@ -93,6 +96,45 @@ namespace ihomis
 
 
             }catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            return ok;
+        }
+
+        public bool SubmitHospitalInfo(String hospitalCode,String hospitalName, String hospitalAddress)
+        {
+            bool ok = true;
+            try
+            {
+                WebRequest request = WebRequest.Create("http://192.168.101.12:3000/API/ihomis/save_hospital");
+                ((HttpWebRequest)request).UserAgent = "iHomisApplication";
+                request.Method = "POST";
+
+                String postData = "hospitalCode=" + hospitalCode + "&hospitalName=" + hospitalName + "&hospitalAddress=" + hospitalAddress;
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentLength = byteArray.Length;
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+
+                WebResponse response = request.GetResponse();
+
+                dataStream = response.GetResponseStream();
+
+                StreamReader reader = new StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+
+                MessageBox.Show(((HttpWebResponse)response).StatusDescription + "\n" + responseFromServer);
+
+                reader.Close();
+                dataStream.Close();
+                response.Close();
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }

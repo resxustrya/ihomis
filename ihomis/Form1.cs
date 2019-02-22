@@ -22,9 +22,9 @@ namespace ihomis
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(txt_code.Text == null)
+            if (txt_code.Text != null)
             {
-                if (dtp_datefrom.Value == null)
+                if (dtp_datefrom.Value != null)
                 {
                     conn.connect();
                     String hospitalCode = txt_code.Text;
@@ -72,6 +72,12 @@ namespace ihomis
         public void SetCode(String code)
         {
             txt_code.Text = code;
+        }
+
+        private void setupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DBSetUp dbSetup = new DBSetUp();
+            dbSetup.ShowDialog();
         }
     }
 }
