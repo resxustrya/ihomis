@@ -13,11 +13,16 @@ namespace ihomis
 {
     public partial class DBSetUp : Form
     {
+        private Form1 form1;
         public DBSetUp()
         {
             InitializeComponent();
         }
-
+        public DBSetUp(Form1 form1)
+        {
+            this.form1 = form1;
+            InitializeComponent();
+        }
         private void button2_Click(object sender, EventArgs e)
         {
             setConfig("ip", txtIP.Text);
@@ -26,7 +31,10 @@ namespace ihomis
             setConfig("port", txtPort.Text);
             setConfig("dbname", txtDbName.Text);
             MessageBox.Show("Successfully Saved");
+            MessageBox.Show("Program needs to close to affect configuration.");
             this.Close();
+            this.form1.Close();
+            
             
         }
         public void setConfig(String key, String value)

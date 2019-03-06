@@ -76,7 +76,7 @@ namespace ihomis
 
         private void setupToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DBSetUp dbSetup = new DBSetUp();
+            DBSetUp dbSetup = new DBSetUp(this);
             dbSetup.ShowDialog();
         }
     }
